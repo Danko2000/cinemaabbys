@@ -47,9 +47,9 @@ jobs:
         run: |
           docker build -t cinemaabyss-api-tests tests/postman
 
-      #  Отладка: проверяем, скопировался ли шаблон
-
-          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/ || echo "Template folder not found!"
+      - name: Debug: Check if template exists in image
+        run: |
+          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/ 
 
           docker run --network cinemaabyss-network cinemaabyss-api-tests
 
