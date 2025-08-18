@@ -81,7 +81,7 @@ coverage/
 .nuxt/
 .cache/
 .parcel-cache/
-reports/
+#reports/
 
 # Postman
 newman/

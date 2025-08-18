@@ -1,0 +1,17 @@
+<!-- tests/postman/reports/templates/default.hbs -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Newman Test Report</title>
+</head>
+<body>
+  <h1>Test Report</h1>
+  <p>Total Requests: {{summary.run.stats.requests.total}}</p>
+  <p>Failed: {{summary.run.failures.length}}</p>
+  <ul>
+    {{#each summary.run.failures}}
+      <li>{{error.name}}: {{source.name}} - {{error.message}}</li>
+    {{/each}}
+  </ul>
+</body>
+</html>
