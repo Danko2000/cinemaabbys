@@ -15,12 +15,16 @@ on:
         type: choice
         options:
           - docker
+      test_folder:
+        description: 'Test folder to run (leave empty for all)'
+        required: false
+        type: string
 
 jobs:
   api-tests:
     name: Run API Tests
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -36,22 +40,26 @@ jobs:
         working-directory: tests/postman
         run: npm install --legacy-peer-deps
 
-      - name: Build and start all services via Docker Compose
+      - name: Build and start all services
         run: |
           docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml up -d
           echo "Waiting for services to be ready..."
           sleep 120
 
+      - name: Debug: Check if template exists in Docker image
+        run: |
+          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/ || echo "❌ Template not found in image!"
+
       - name: Run API tests in Docker network
         run: |
           docker build -t cinemaabyss-api-tests tests/postman
-
-          # 🔍 Проверяем, скопировался ли шаблон в образ
-          echo "🔍 Checking if default.hbs template exists in the Docker image..."
-          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/ || echo "❌ Template not found!"
-
-        # Запускаем тесты
+          
+          # Повторная проверка после сборки (на всякий случай)
+          echo "🔍 Final check: templates in image"
+          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/
+          
+          # Запуск тестов
           docker run --network cinemaabyss-network cinemaabyss-api-tests
 
       - name: Upload test report
