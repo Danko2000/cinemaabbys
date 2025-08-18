@@ -1,5 +1,4 @@
 # .github/workflows/api-tests.yml
-# что-то поменял
 name: API Tests
 
 on:
@@ -16,45 +15,11 @@ on:
         type: choice
         options:
           - docker
-      test_folder:
-        description: 'Test folder to run (leave empty for all)'
-        required: false
-        type: string
 
 jobs:
   api-tests:
     name: Run API Tests
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres_password
-          POSTGRES_DB: cinemaabyss
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      zookeeper:
-        image: wurstmeister/zookeeper:latest
-        ports:
-          - 2181:2181
-
-      kafka:
-        image: wurstmeister/kafka:2.13-2.7.0
-        env:
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_CREATE_TOPICS: "movie-events:1:1,user-events:1:1,payment-events:1:1"
-        ports:
-          - 9092:9092
 
     steps:
       - name: Checkout code
@@ -69,9 +34,9 @@ jobs:
 
       - name: Install Newman and dependencies
         working-directory: tests/postman
-        run: npm install --legacy-peer-deps  # ✅ Обходит ошибку ERESOLVE
+        run: npm install --legacy-peer-deps
 
-      - name: Build and start all services
+      - name: Build and start all services via Docker Compose
         run: |
           docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml up -d
