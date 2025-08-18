@@ -1,0 +1,96 @@
+# .github/workflows/api-tests.yml
+# что-то поменял
+name: API Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run tests against'
+        required: true
+        default: 'docker'
+        type: choice
+        options:
+          - docker
+      test_folder:
+        description: 'Test folder to run (leave empty for all)'
+        required: false
+        type: string
+
+jobs:
+  api-tests:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_password
+          POSTGRES_DB: cinemaabyss
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      zookeeper:
+        image: wurstmeister/zookeeper:latest
+        ports:
+          - 2181:2181
+
+      kafka:
+        image: wurstmeister/kafka:2.13-2.7.0
+        env:
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_CREATE_TOPICS: "movie-events:1:1,user-events:1:1,payment-events:1:1"
+        ports:
+          - 9092:9092
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: tests/postman/package-lock.json
+
+      - name: Install Newman and dependencies
+        working-directory: tests/postman
+        run: npm install --legacy-peer-deps  # ✅ Обходит ошибку ERESOLVE
+
+      - name: Build and start all services
+        run: |
+          docker compose -f docker-compose.yml build
+          docker compose -f docker-compose.yml up -d
+          echo "Waiting for services to be ready..."
+          sleep 120
+
+      - name: Run API tests in Docker network
+        run: |
+          docker build -t cinemaabyss-api-tests tests/postman
+          docker run --network cinemaabyss-network cinemaabyss-api-tests
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: tests/postman/reports/
+          retention-days: 7
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f docker-compose.yml down
