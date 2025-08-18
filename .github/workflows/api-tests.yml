@@ -46,7 +46,7 @@ jobs:
 
           # Проверяем, скопировался ли шаблон в образ
           echo "Checking if default.hbs template"
-          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates.
+          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/
           # Запускаем тесты
           docker run --network cinemaabyss-network cinemaabyss-api-tests
       - name: Upload test report
