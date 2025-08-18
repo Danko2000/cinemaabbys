@@ -11,4 +11,6 @@ COPY reports/templates/ /app/reports/templates/
 
 COPY . .
 
+RUN ls -la /app/reports/templates/
+
 CMD ["npm", "run", "test:docker"]
