@@ -153,8 +153,8 @@ terraform.tfstate.backup
 go.work
 
 # Postman tests reports
-tests/postman/reports/
+#tests/postman/reports/
 # Игнорировать всё в reports, кроме templates
-tests/postman/reports/*
-!tests/postman/reports/templates/
-!tests/postman/reports/templates/*
+#tests/postman/reports/*
+#!tests/postman/reports/templates/
+#!tests/postman/reports/templates/*
