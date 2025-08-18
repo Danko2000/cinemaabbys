@@ -1,67 +1,54 @@
 # .github/workflows/api-tests.yml
 name: API Tests
-
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   pull_request:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to run tests against'
+        description: Environment to run tests against
         required: true
-        default: 'docker'
+        default: docker
         type: choice
         options:
           - docker
-      test_folder:
-        description: 'Test folder to run (leave empty for all)'
-        required: false
-        type: string
-
 jobs:
   api-tests:
     name: Run API Tests
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: npm
           cache-dependency-path: tests/postman/package-lock.json
-
       - name: Install Newman and dependencies
         working-directory: tests/postman
         run: npm install --legacy-peer-deps
-
-      - name: Build and start all services
+      - name: Build and start all services via Docker Compose
         run: |
           docker compose -f docker-compose.yml build
           docker compose -f docker-compose.yml up -d
           echo "Waiting for services to be ready..."
           sleep 120
-
-      - name: Debug: Check if template exists in Docker image
-        run: |
-          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/ || echo "❌ Template not found in image!"
-
       - name: Run API tests in Docker network
         run: |
           docker build -t cinemaabyss-api-tests tests/postman
-          
-          # Повторная проверка после сборки (на всякий случай)
-          echo "🔍 Final check: templates in image"
-          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates/
-          
-          # Запуск тестов
-          docker run --network cinemaabyss-network cinemaabyss-api-tests
 
+          # Проверяем, скопировался ли шаблон в образ
+          echo "Checking if default.hbs template"
+          docker run --rm cinemaabyss-api-tests ls -la /app/reports/templates.
+          # Запускаем тесты
+          docker run --network cinemaabyss-network cinemaabyss-api-tests
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
@@ -69,7 +56,6 @@ jobs:
           name: newman-report
           path: tests/postman/reports/
           retention-days: 7
-
       - name: Stop services
         if: always()
         run: docker compose -f docker-compose.yml down
