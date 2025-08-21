@@ -4,26 +4,26 @@
   "values": [
     {
       "key": "baseUrl",
-      "value": "http://127.0.0.1:8080",
-      "type": "default",
+      "value": "http://127.0.0.1:8085",
+      "type": "text",
       "enabled": true
     },
     {
       "key": "moviesServiceUrl",
       "value": "http://127.0.0.1:8081",
-      "type": "default",
+      "type": "text",
       "enabled": true
     },
     {
       "key": "eventsServiceUrl",
       "value": "http://127.0.0.1:8082",
-      "type": "default",
+      "type": "text",
       "enabled": true
     },
     {
       "key": "proxyServiceUrl",
       "value": "http://127.0.0.1:8000",
-      "type": "default",
+      "type": "text",
       "enabled": true
     }
   ],

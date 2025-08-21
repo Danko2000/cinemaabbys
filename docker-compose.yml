@@ -67,7 +67,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "8085:8080"  # Изменено на 8081, чтобы избежать конфликта с другими сервисами
+      - "8085:8080"  # Изменено на 8085, чтобы избежать конфликта с другими сервисами
     environment:
       PORT: 8080
       DB_CONNECTION_STRING: postgres://postgres:postgres_password@postgres:5432/cinemaabyss?sslmode=disable

@@ -5,25 +5,25 @@
     {
       "key": "baseUrl",
       "value": "http://monolith:8080",
-      "type": "default",
+      "type": "text",
       "enabled": true
     },
     {
       "key": "moviesServiceUrl",
       "value": "http://movies-service:8081",
-      "type": "default",
+      "type": "text",
       "enabled": true
     },
     {
       "key": "eventsServiceUrl",
       "value": "http://events-service:8082",
-      "type": "default",
+      "type": "text",
       "enabled": true
     },
     {
       "key": "proxyServiceUrl",
       "value": "http://proxy-service:8000",
-      "type": "default",
+      "type": "text",
       "enabled": true
     }
   ],
