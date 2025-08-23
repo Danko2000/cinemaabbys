@@ -2,10 +2,11 @@
 global:
   namespace: cinemaabyss
   domain: cinemaabyss.example.com
+  imagePullSecretName: dockerconfigjson
 
 # Image pull secrets
 imagePullSecrets:
-  dockerconfigjson: ewoJImF1dGhzIjogewoJCSJnaGNyLmlvIjogewoJCQkiYXV0aCI6
+  dockerconfigjson: ewogICJhdXRocyI6IHsKICAgICJnaGNyLmlvIjogewogICAgICAiYXV0aCI6ICJSR0Z1YTI4eU1EQXdPbWRvY0Y5SE4yeDRaV2xWVlVkclJGWkRVa0ZJVjJKcU4xcDBjems1TVhCUFNqSXdPWE00ZDBFIgogICAgfQogIH0KfQ==
 # Database configuration
 database:
   host: postgres
@@ -33,7 +34,7 @@ database:
 monolith:
   enabled: true
   image:
-    repository: ghcr.io/db-exp/cinemaabysstest/monolith
+    repository: ghcr.io/danko2000/cinemaabyss/monolith
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -53,7 +54,7 @@ monolith:
 proxyService:
   enabled: true
   image:
-    repository: ghcr.io/db-exp/cinemaabysstest/proxy-service
+    repository: ghcr.io/danko2000/cinemaabyss/proxy-service
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -73,7 +74,7 @@ proxyService:
 moviesService:
   enabled: true
   image:
-    repository: ghcr.io/db-exp/cinemaabysstest/movies-service
+    repository: ghcr.io/danko2000/cinemaabyss/movies-service
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -93,7 +94,7 @@ moviesService:
 eventsService:
   enabled: true
   image:
-    repository: ghcr.io/db-exp/cinemaabysstest/events-service
+    repository: ghcr.io/danko2000/cinemaabyss/events-service
     tag: latest
     pullPolicy: Always
   replicas: 1
@@ -111,6 +112,7 @@ eventsService:
 
 # Kafka configuration
 kafka:
+  hostname: localhost  # или cinemaabyss.example.com
   enabled: true
   image:
     repository: wurstmeister/kafka
@@ -182,4 +184,4 @@ ingress:
 config:
   # Strangler Fig configuration
   gradualMigration: "true"
-  moviesMigrationPercent: "100"
+  moviesMigrationPercent: "80"

@@ -6,13 +6,27 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Позволяет передавать тело POST-запросов
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    # Увеличиваем таймауты
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "30"
 spec:
   rules:
     - host: cinemaabyss.example.com
       http:
         paths:
-          #дополните конфигурацию для /
-          ...
+          # Корень → proxy-service
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: proxy-service
+                port:
+                  number: 8000
+
+          # /api/events → напрямую в events-service (для тестов)
           - path: /api/events
             pathType: Prefix
             backend:
@@ -20,3 +34,12 @@ spec:
                 name: events-service
                 port:
                   number: 8082
+
+          # /api/movies → можно тоже направить напрямую (опционально)
+          - path: /api/movies
+            pathType: Prefix
+            backend:
+              service:
+                name: movies-service
+                port:
+                  number: 8081

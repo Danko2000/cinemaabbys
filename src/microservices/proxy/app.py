@@ -14,7 +14,7 @@ MOVIES_SERVICE_URL = os.getenv("MOVIES_SERVICE_URL", "http://movies-service:8081
 EVENTS_SERVICE_URL = os.getenv("EVENTS_SERVICE_URL", "http://events-service:8082")
 
 # Процент трафика, который идёт в movies-service (остальное — в монолит)
-MIGRATION_PERCENT = float(os.getenv("MOVIES_MIGRATION_PERCENT", "0"))
+MIGRATION_PERCENT = float(os.getenv("MOVIES_MIGRATION_PERCENT") or "0")
 
 @app.route('/api/movies', methods=['GET'])
 def proxy_movies():

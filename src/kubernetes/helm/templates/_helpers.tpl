@@ -67,3 +67,12 @@ Return the namespace
 {{- define "cinemaabyss.namespace" -}}
 {{- default .Values.global.namespace .Release.Namespace }}
 {{- end }}
+
+{{/*
+Define hostname for Kafka advertised listeners.
+Used to allow external access via minikube tunnel or ingress.
+Example: localhost, cinemaabyss.example.com
+*/}}
+{{- define "cinemaabyss.kafkaHostname" -}}
+{{- default "kafka" .Values.kafka.hostname }}
+{{- end }}

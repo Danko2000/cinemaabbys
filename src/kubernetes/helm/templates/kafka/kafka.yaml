@@ -191,7 +191,7 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 9092
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 20
       {{- if .Values.kafka.persistence.enabled }}
       volumes:
